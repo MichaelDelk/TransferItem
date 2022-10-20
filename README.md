@@ -26,6 +26,21 @@ Note that the HTML page contains a separate form for each transaction type. The 
 - All files for the app are in a single directory. If the app was larger and included additional tooling, js and css files would be moved to a subdirectory, and subdirectories for composer and vendor libraries would be included.
 - The TransferItem.php and favicon-geminimade.png files are not included in this repository.
 
+#Directions for Demonstration
+
+  1. Click/tap TROU tab.
+  2. Enter an alpha-numeric item number (e.g. 0110149-013).
+  3. Enter a numeric quantity.
+  4. Enter a numeric From Warehouse (e.g. 990).
+  5. Click/tap the Available Locations button.
+  6. Click/tap the desired stock location.
+  7. Enter a numeric To Warehouse.
+  8. Enter any alphanumeric values in the To Stockroom, To Aisle, and To Stock Location fields.
+  9. Click/tap the Transfre Item (TROU) button.
+  10. Verify result message verbiage is returned at the top of the page.
+  11. Of course, start entering minimums, maximums, and garbage to see where unexpected results occur.
+  
+
 #Opportunities
 - Convert from GET TO POST. (Original design required GET.)
 - Increase amount of validation done by front-end.
