@@ -1,0 +1,137 @@
+@charset "UTF-8";
+
+/**
+ * TransferItem.css
+ *
+ * Provide custom styles over default Bootstrap 5 css.
+ *       
+ * @author Michael Delk
+ * @version 2022-06-23
+ */
+
+/**
+ * Color scheme (Blue) for TROU transactions.
+ */
+
+#menuTrou.border-primary {
+  border-color: #0000ff !important;
+}
+
+#menuTrou .btn-primary {
+  color: white;
+  background-color: #0000ff;
+  border-color: #0000ff;
+}
+
+#menuTrou .btn-primary:hover {
+  color: white;
+  background-color: #0000ff;
+  border-color: #0000ff;
+}
+
+
+.nav-pills #navLinkTrou.nav-link.active,
+.nav-pills .show > #navLinkTrou.nav-link {
+  color: #fffff;
+  background-color: #0000ff;
+}
+
+
+/**
+ * Color scheme (Red) for ISSU transactions.
+ */
+
+#menuIssu.border-primary {
+  border-color: gold !important;
+}
+
+#menuIssu .btn-primary {
+  color: black;
+  background-color: gold;
+  border-color: gold;
+}
+
+#menuIssu .btn-primary:hover {
+  color: black;
+  background-color: gold;
+  border-color: gold;
+}
+
+.nav-pills #navLinkIssu.nav-link.active,
+.nav-pills .show > #navLinkIssu.nav-link {
+  color: black;
+  background-color: gold;
+}
+
+/**
+ * Color scheme (Gold) for ADJ transactions.
+ */
+
+#menuAdj.border-primary {
+  border-color: red !important;
+}
+
+#menuAdj .btn-primary {
+  color: white;
+  background-color: red;
+  border-color: red;
+}
+
+#menuAdj .btn-primary:hover {
+  color: white;
+  background-color: red;
+  border-color: red;
+}
+
+.nav-pills #navLinkAdj.nav-link.active,
+.nav-pills .show > #navLinkAdj.nav-link {
+  color: white;
+  background-color: red;
+}
+
+
+/**
+ * Color scheme (Green) for PROD transactions.
+ */
+
+#menuProd.border-primary {
+  border-color: green !important;
+}
+
+#menuProd .btn-primary {
+  color: white;
+  background-color: green;
+  border-color: green;
+}
+
+#menuProd .btn-primary:hover {
+  color: white;
+  background-color: green;
+  border-color: green;
+}
+
+.nav-pills #navLinkProd.nav-link.active,
+.nav-pills .show > #navLinkProd.nav-link {
+  color: white;
+  background-color: green;
+}
+
+
+ .contentx-table{
+    border-collapse:collapse;
+    margin: 25px 0;
+    font-size: 0.9em;
+    min-width: 400px;
+    }
+    
+    .contentx-table thead tr {
+    background-color: #009879;
+    color:#ffffff;
+    text-align: left;
+    font-weight: bold;
+     }
+     
+    .contentx-table tbody tr 
+    {
+    border-bottom: 1px solid #dddddd;
+    } 

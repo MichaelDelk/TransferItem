@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<!--
+ * index.html (../TransferItem/..)
+ *
+ * Bootstrap 5 form to request item transfer requests.
+ *
+ * Initial design to support three forms on a single
+ * page: TROU - Transfer out (+ TRIN - Transfer in)
+ *       ISSU - Issue (Neg qty not allowed)
+ *       ADJ  - Adjustment (Neg qty allowed)
+ *       PROD - Adjustment (Neg qty allowed. Used in spec warehouses.)
+ *
+ * Provide minimal field validation. To minimize
+ * connections to server and programming complexity,
+ * most parameter validaiton will be left to the RPG
+ * transaction processing program on the Harris server.
+ *
+ * Note: Library list set by php's call to GConB.php
+ * which reads request parm $_GET['DB'] sent by this 
+ * HTML form's hidden input field 'DB'.
+ *
+ * @author Michael Delk
+ * @version 2021-10-08
+ *
+ * -->
+<html lang="en">
+<head>
+  <title>Item Transfer</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="TransferItem.css" rel="stylesheet">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-geminimade.png">
+  
+</head>
+<body>
+  <div class="container">
+    <h4 class="text-danger text-center">[ Test (IV) Inventory System ]</h4>
+
+      <!-- Locations Modal -->
+      <div class="modal fade" id="locationsModal" tabindex="-1" aria-labelledby="locationsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="locationsModalLabel">Avaliable Locations</h5>
+              <small class="text-muted">&nbsp;&nbsp;Tap/click to select.</small>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="divLocations">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <h2>Inventory - Transaction Entry</h2>
+
+    <!-- Nav pills -->
+    <ul class="nav nav-pills" role="tablist">
+      <li class="nav-item">
+        <a id="navLinkTrou" class="nav-link active" data-bs-toggle="pill" href="#menuTrou">TROU</a>
+      </li>
+      <li class="nav-item">
+        <a id="navLinkIssu" class="nav-link" data-bs-toggle="pill" href="#menuIssu">ISSU</a>
+      </li>
+      <li class="nav-item">
+        <a id="navLinkProd" class="nav-link" data-bs-toggle="pill" href="#menuProd">PROD</a>
+      </li>
+      <li class="nav-item">
+        <a id="navLinkAdj" class="nav-link" data-bs-toggle="pill" href="#menuAdj">ADJ</a>
+      </li> 
+    </ul>
+
+    <!-- Form Messages -->
+    <div class="m-4" id="form-messages"></div>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+      <div id="menuTrou" class="container p-3 border border-2 border-primary rounded-3 tab-pane active">
+        <h3>Transfer out (TROU)</h3>
+        <form class="needs-validation" id="frmSubmitTrou" action="TransferItem.php">
+          <div class="row">
+            <div class="col-3">
+              <div class="mb-2">
+                <label for="item-number" class="form-label">Item Number</label>
+                <input type="text" class="form-control text-uppercase reset-value" id="item-number" placeholder="Enter item number" name="item-number" required>
+              </div>
+            </div>
+            <div class="col-9">
+              <div class="mb-2">
+                <label class="form-label">Item Description</label>
+                <p class="lead reset-value" id="item-description">...item description not found...</p>
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="item-quantity" class="form-label">Item Quantity</label>
+            <input type="number" class="form-control reset-value" id="item-quantity" placeholder="ENTER ITEM QUANTITY" name="item-quantity" required>
+          </div>
+          <div class="row">
+            <div class="col-2">
+              <div class="mb-2">
+                <label for="item-warehouse-from" class="form-label">From Warehouse</label>
+                <input type="number" class="form-control" id="item-warehouse-from" placeholder="ENTER FROM WAREHOUSE" name="item-warehouse-from" required>
+              </div>
+            </div>
+            <div class="col-2">
+              <div class="mb-2">
+                <label for="stockroom-from" class="form-label">From Stockroom</label>
+                <input type="text" class="form-control text-uppercase reset-value" id="stockroom-from" placeholder="Enter from stockroom" name="stockroom-from" maxlength="3" required>
+              </div>
+            </div>
+            <div class="col-2">
+              <div class="mb-2">
+                <label for="aisle-from" class="form-label">From Aisle</label>
+                <input type="text" class="form-control text-uppercase reset-value" id="aisle-from" placeholder="Enter from aisle" name="aisle-from" maxlength="4" required>
+              </div>
+            </div>
+            <div class="col-2">
+              <div class="mb-2">
+                <label for="stock-location-from" class="form-label">From Stock Location</label>
+                <input type="text" class="form-control text-uppercase reset-value" id="stock-location-from" placeholder="Enter from stock location" name="stock-location-from" maxlength="8" required>
+              </div>
+            </div>
+            <div class="col-2">
+              <div class="mb-2">
+                <!-- Button trigger modal -->
+                <label for="btnLocations" class="form-label">&nbsp;</label>
+                <div>
+                  <button type="button" class="btn btn-primary" id="btnLocations" data-form="frmSubmitTrou" data-bs-toggle="modal" data-bs-target="#locationsModal">Available locations</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-2">
+              <div class="mb-2">
+                <label for="item-warehouse-to" class="form-label">To Warehouse</label>
+                <input type="number" class="form-control text-uppercase reset-value" id="item-warehouse-to" placeholder="Enter to warehouse" name="item-warehouse-to" required>
+              </div>
+            </div>
+            <div class="col-2">
+              <div class="mb-2">
+                <label for="stockroom-to" class="form-label">To Stockroom</label>
+                <input type="text" class="form-control text-uppercase reset-value" id="stockroom-to" placeholder="Enter to stockroom" name="stockroom-to" maxlength="3" required>
+              </div>
+            </div>
+            <div class="col-2">
+              <div class="mb-2">
+                <label for="aisle-to" class="form-label">To Aisle</label>
+                <input type="text" class="form-control text-uppercase reset-value" id="aisle-to" placeholder="Enter to aisle" name="aisle-to" maxlength="4" required>
+              </div>
+            </div>
+            <div class="col-2">
+              <div class="mb-2">
+                <label for="stock-location-to" class="form-label">To Stock Location</label>
+                <input type="text" class="form-control text-uppercase reset-value" id="stock-location-to" placeholder="Enter to stock location" name="stock-location-to" maxlength="8" required>
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" id="btnSubmitTrou">Transfer item (TROU)</button>
+          <input type="hidden" id="adj-reason" name="adj-reason" value="">
+          <input type="hidden" id="DB" name="DB" value="IV">
+          <input type="hidden" id="xtn-type" name="xtn-type" value="TROU">
+        </form>
+      </div>
+      <div id="menuIssu" class="container p-3 border border-2 border-primary rounded-3 tab-pane fade">
+        <h3>Issue (ISSU)</h3>
+        <form class="needs-validation" id="frmSubmitIssu" action="TransferItem.php">
+          <div class="row">
+            <div class="col-3">
+              <div class="mb-2">
+                <label for="item-number" class="form-label">Item Number</label>
+                <input type="text" class="form-control text-uppercase reset-value" id="item-number" placeholder="Enter item number" name="item-number" required>
+              </div>
+            </div>
+            <div class="col-9">
+              <div class="mb-2">
+                <label class="form-label">Item Description</label>
+                <p class="lead reset-value" id="item-description">...item description not found...</p>
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="item-quantity" class="form-label">Item Quantity</label>
+            <input type="number" class="form-control reset-value" id="item-quantity" placeholder="ENTER ITEM QUANTITY" name="item-quantity" required>
+          </div>
+          <div class="row">
+            <div class="col-2">
+              <div class="mb-2">
+                <label for="item-warehouse-from" class="form-label">From Warehouse</label>
+                <input type="number" class="form-control" id="item-warehouse-from" placeholder="ENTER FROM WAREHOUSE" name="item-warehouse-from" required>
+              </div>
+            </div>
+            <div class="col-2">
+              <div class="mb-2">
+                <label for="stockroom-from" class="form-label">From Stockroom</label>
+                <input type="text" class="form-control text-uppercase reset-value" id="stockroom-from" placeholder="Enter from stockroom" name="stockroom-from" maxlength="3" required>
+              </div>
+            </div>
+            <div class="col-2">
+              <div class="mb-2">
+                <label for="aisle-from" class="form-label">From Aisle</label>
+                <input type="text" class="form-control text-uppercase reset-value" id="aisle-from" placeholder="Enter from aisle" name="aisle-from" maxlength="4" required>
+              </div>
+            </div>
+            <div class="col-2">
+              <div class="mb-2">
+                <label for="stock-location-from" class="form-label">From Stock Location</label>
+                <input type="text" class="form-control text-uppercase reset-value" id="stock-location-from" placeholder="Enter from stock location" name="stock-location-from" maxlength="8" required>
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="adj-reason" class="form-label">Adjustment Reason</label>
+            <input type="text" class="form-control reset-value" id="adj-reason" placeholder="Enter adjustment reason" name="adj-reason" maxlength="25" required>
+          </div>
+          <button type="submit" class="btn btn-primary" id="btnSubmitIssu">Issue item (ISSU)</button>
+          <input type="hidden" id="item-warehouse-to" name="item-warehouse-to" value="0">
+          <input type="hidden" id="stockroom-to" name="stockroom-to" value="">
+          <input type="hidden" id="aisle-to" name="aisle-to" value="">
+          <input type="hidden" id="stock-location-to" name="stock-location-to" value="">
+          <input type="hidden" id="DB" name="DB" value="IV">
+          <input type="hidden" id="xtn-type" name="xtn-type" value="ISSU">
+        </form>
+      </div>
+      <div id="menuAdj" class="container p-3 border border-2 border-primary rounded-3 tab-pane fade">
+        <h3>Adjustment to warehouse on-hand (ADJ)</h3>
+        <form class="needs-validation" id="frmSubmitAdj" action="TransferItem.php">
+          <div class="row">
+            <div class="col-3">
+              <div class="mb-2">
+                <label for="item-number" class="form-label">Item Number</label>
+                <input type="text" class="form-control text-uppercase reset-value" id="item-number" placeholder="Enter item number" name="item-number" required>
+              </div>
+            </div>
+            <div class="col-9">
+              <div class="mb-2">
+                <label class="form-label">Item Description</label>
+                <p class="lead reset-value" id="item-description">...item description not found...</p>
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="item-quantity" class="form-label">Item Quantity</label>
+            <input type="number" class="form-control reset-value" id="item-quantity" placeholder="ENTER ITEM QUANTITY" name="item-quantity" required>
+          </div>
+          <div class="row">
+            <div class="col-2">
+              <div class="mb-2">
+                <label for="item-warehouse-from" class="form-label">From Warehouse</label>
+                <input type="number" class="form-control" id="item-warehouse-from" placeholder="ENTER FROM WAREHOUSE" name="item-warehouse-from" required>
+              </div>
+            </div>
+            <div class="col-2">
+              <div class="mb-2">
+                <label for="stockroom-from" class="form-label">From Stockroom</label>
+                <input type="text" class="form-control text-uppercase reset-value" id="stockroom-from" placeholder="Enter from stockroom" name="stockroom-from" maxlength="3" required>
+              </div>
+            </div>
+            <div class="col-2">
+              <div class="mb-2">
+                <label for="aisle-from" class="form-label">From Aisle</label>
+                <input type="text" class="form-control text-uppercase reset-value" id="aisle-from" placeholder="Enter from aisle" name="aisle-from" maxlength="4" required>
+              </div>
+            </div>
+            <div class="col-2">
+              <div class="mb-2">
+                <label for="stock-location-from" class="form-label">From Stock Location</label>
+                <input type="text" class="form-control text-uppercase reset-value" id="stock-location-from" placeholder="Enter from location" name="stock-location-from" maxlength="8" required>
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="adj-reason" class="form-label">Adjustment Reason</label>
+            <input type="text" class="form-control reset-value reset-value" id="adj-reason" placeholder="Enter adjustment reason" name="adj-reason" maxlength="25" required>
+          </div>
+          <button type="submit" class="btn btn-primary" id="btnSubmitAdj">Adjust item (ADJ)</button>
+          <input type="hidden" id="item-warehouse-to" name="item-warehouse-to" value="0">
+          <input type="hidden" id="stockroom-to" name="stockroom-to" value="">
+          <input type="hidden" id="aisle-to" name="aisle-to" value="">
+          <input type="hidden" id="stock-location-to" name="stock-location-to" value="">
+          <input type="hidden" id="DB" name="DB" value="IV">
+          <input type="hidden" id="xtn-type" name="xtn-type" value="ADJ">
+        </form>
+      </div>
+      <div id="menuProd" class="container p-3 border border-2 border-primary rounded-3 tab-pane fade">
+        <h3>Production (PROD)</h3>
+        <form class="needs-validation" id="frmSubmitProd" action="TransferItem.php">
+          <div class="row">
+            <div class="col-3">
+              <div class="mb-2">
+                <label for="item-number" class="form-label">Item Number</label>
+                <input type="text" class="form-control text-uppercase reset-value" id="item-number" placeholder="Enter item number" name="item-number" required>
+              </div>
+            </div>
+            <div class="col-9">
+              <div class="mb-2">
+                <label class="form-label">Item Description</label>
+                <p class="lead reset-value" id="item-description">...item description not found...</p>
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="item-quantity" class="form-label">Item Quantity</label>
+            <input type="number" class="form-control reset-value" id="item-quantity" placeholder="ENTER ITEM QUANTITY" name="item-quantity" required>
+          </div>
+          <div class="row">
+            <div class="col-2">
+              <div class="mb-2">
+                <label for="item-warehouse-from" class="form-label">From Warehouse</label>
+                <input type="number" class="form-control" id="item-warehouse-from" placeholder="ENTER FROM WAREHOUSE" name="item-warehouse-from" required>
+              </div>
+            </div>
+            <div class="col-2">
+              <div class="mb-2">
+                <label for="stockroom-from" class="form-label">From Stockroom</label>
+                <input type="text" class="form-control text-uppercase reset-value" id="stockroom-from" placeholder="Enter from stockroom" name="stockroom-from" maxlength="3" required>
+              </div>
+            </div>
+            <div class="col-2">
+              <div class="mb-2">
+                <label for="aisle-from" class="form-label">From Aisle</label>
+                <input type="text" class="form-control text-uppercase reset-value" id="aisle-from" placeholder="Enter from aisle" name="aisle-from" maxlength="4">
+              </div>
+            </div>
+            <div class="col-2">
+              <div class="mb-2">
+                <label for="stock-location-from" class="form-label">From Stock Location</label>
+                <input type="text" class="form-control text-uppercase reset-value" id="stock-location-from" placeholder="Enter from location" name="stock-location-from" maxlength="8">
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="adj-reason" class="form-label">Adjustment Reason</label>
+            <input type="text" class="form-control reset-value" id="adj-reason" placeholder="Enter adjustment reason" name="adj-reason" maxlength="25" required>
+          </div>
+          <button type="submit" class="btn btn-primary" id="btnSubmitProd">Adjust item (PROD)</button>
+          <input type="hidden" id="item-warehouse-to" name="item-warehouse-to" value="0">
+          <input type="hidden" id="stockroom-to" name="stockroom-to" value="">
+          <input type="hidden" id="aisle-to" name="aisle-to" value="">
+          <input type="hidden" id="stock-location-to" name="stock-location-to" value="">
+          <input type="hidden" id="DB" name="DB" value="IV">
+          <input type="hidden" id="xtn-type" name="xtn-type" value="PROD">
+        </form>
+      </div>
+      
+    </div>
+
+  </div> <!-- Page main container -->
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+  <script src="TransferItem.js"></script>
+
+</body>
+</html>
